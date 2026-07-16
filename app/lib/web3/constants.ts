@@ -20,13 +20,8 @@ export const CURRENCY_CUSD = "cUSD";
 export const STAKE_TOKEN_ADDRESS = CUSD_ADDRESS;
 export const STAKE_TOKEN_DECIMALS = 18; // cUSD uses 18 decimals
 
-// DreamLotto/cbet contract (set after deploy on Celo). Unused in the current
-// treasury-settlement model; reserved for a future on-chain escrow contract.
+// Deployed CbetLotto proxy address on Celo. Stakes are placed into this
+// contract via `placeBet`; the cbet-cron service publishes results to it.
 export const LOTTO_CONTRACT_ADDRESS =
   (process.env.NEXT_PUBLIC_LOTTO_CONTRACT_ADDRESS as `0x${string}` | undefined) ||
   null;
-
-// Treasury wallet that receives cUSD stakes and pays out winners. Public
-// receive address, safe to expose to the client.
-export const TREASURY_ADDRESS =
-  (process.env.NEXT_PUBLIC_TREASURY_ADDRESS as `0x${string}` | undefined) || null;
