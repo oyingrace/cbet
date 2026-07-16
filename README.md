@@ -1,36 +1,35 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# cbet
 
-## Getting Started
+A numbers-lottery game (a port of Dream Lotto) built as a **MiniPay Mini App** on the **Celo** blockchain. The game stakes and settles in **cUSD**.
 
-First, run the development server:
+## How the wallet works
+
+cbet runs inside the **MiniPay** dapp browser. MiniPay injects an EIP-1193
+provider at `window.ethereum` with `isMiniPay === true`, so the app:
+
+- auto-connects the wallet on load — there is **no "Connect Wallet" button**,
+- identifies the player by their Celo **wallet address**,
+- stakes in **cUSD** using **legacy transactions** (MiniPay ignores EIP-1559
+  fields).
+
+The MiniPay integration lives in `app/lib/web3/` (`config.ts`, `constants.ts`,
+`hooks/useMiniPay.ts`) and is wired through `app/providers.tsx`.
+
+## Getting started
 
 ```bash
+npm install
+cp .env.example .env.local   # fill in the values
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open the app inside MiniPay (or MiniPay's Site Tester) to exercise the wallet
+flow. In a normal desktop browser the app loads but reports that MiniPay was
+not detected.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Next.js 16 (App Router)
+- wagmi + viem (Celo)
+- MongoDB + Mongoose
+- Tailwind CSS
