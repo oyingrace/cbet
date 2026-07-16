@@ -8,6 +8,8 @@ const AppContext = createContext({
   isReady: false,
   address: undefined,
   isConnected: false,
+  isConnecting: false,
+  connectWallet: () => {},
   user: null,
   isSyncing: false,
 });
@@ -38,7 +40,8 @@ function captureReferral() {
  * exposed via context for pages that need it.
  */
 export function AppProvider({ children }) {
-  const { isMiniPay, isReady, address, isConnected } = useMiniPay();
+  const { isMiniPay, isReady, address, isConnected, isConnecting, connectWallet } =
+    useMiniPay();
   const [user, setUser] = useState(null);
   const [isSyncing, setIsSyncing] = useState(false);
   const syncedFor = useRef(null);
@@ -84,7 +87,16 @@ export function AppProvider({ children }) {
 
   return (
     <AppContext.Provider
-      value={{ isMiniPay, isReady, address, isConnected, user, isSyncing }}
+      value={{
+        isMiniPay,
+        isReady,
+        address,
+        isConnected,
+        isConnecting,
+        connectWallet,
+        user,
+        isSyncing,
+      }}
     >
       {children}
     </AppContext.Provider>

@@ -71,6 +71,41 @@ export function getWinCondition(game) {
   return 'all';
 }
 
+/**
+ * Map an app game type -> the on-chain CbetLotto gameType index.
+ * Must stay in sync with CbetLotto._validateGameAndNumbers.
+ */
+export function getOnChainGameTypeIndex(gameType) {
+  switch (gameType) {
+    case 'draw-2':
+      return 0;
+    case 'draw-3':
+      return 1;
+    case 'draw-4':
+      return 2;
+    case 'combo-2':
+      return 3;
+    case 'combo-3':
+      return 4;
+    case 'draw-5':
+      return 5;
+    case 'lucky-10':
+      return 6;
+    case 'mega-20':
+      return 7;
+    case 'turbo-30':
+      return 8;
+    case 'ultra-40':
+      return 9;
+    case 'combo-4':
+      return 10;
+    case 'combo-5':
+      return 11;
+    default:
+      return null;
+  }
+}
+
 export const GAME_CATEGORIES = [
   { id: 'special', name: 'Special' },
   { id: 'draw', name: 'Main' },

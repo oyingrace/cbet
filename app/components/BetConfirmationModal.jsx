@@ -7,15 +7,20 @@ import { useApp } from '@/lib/context/AppContext';
 import BetCalculator from '@/lib/services/betCalculator';
 import { walletFetch } from '@/lib/web3/apiClient';
 import { erc20Abi } from '@/lib/web3/erc20Abi';
+import { lottoAbi } from '@/lib/web3/lottoAbi';
 import { cusdToRaw, formatCusd } from '@/lib/web3/format';
-import { CUSD_ADDRESS, TREASURY_ADDRESS } from '@/lib/web3/constants';
+import { getOnChainGameTypeIndex } from '@/lib/utils/gameTypes';
+import { generateRoundId } from '@/lib/utils/rounds';
+import { CUSD_ADDRESS, LOTTO_CONTRACT_ADDRESS } from '@/lib/web3/constants';
 
 /**
- * Confirms and places a bet by staking cUSD to the treasury from MiniPay.
+ * Confirms and places a bet by staking cUSD into the CbetLotto contract.
  *
- * Flow: transfer cUSD (MiniPay signs — legacy tx) → wait for the receipt →
- * POST the txHash to /api/bets/place, where the transfer is verified on Celo
- * and the bet is recorded. No PIN and no relayer: MiniPay holds the keys.
+ * Flow (MiniPay signs each step, gas paid in cUSD):
+ *   1. approve cUSD to the contract if the allowance is short
+ *   2. placeBet(drawId, gameType, numbers, amount) — escrows the stake on-chain
+ *   3. POST the txHash to /api/bets/place, which verifies the BetPlaced event
+ *      on Celo and records the bet.
  */
 const BetConfirmationModal = ({
   isOpen,
@@ -30,7 +35,7 @@ const BetConfirmationModal = ({
   const { address } = useApp();
   const { writeContractAsync } = useWriteContract();
   const publicClient = usePublicClient();
-  const [status, setStatus] = useState('idle'); // idle | staking | recording | error
+  const [status, setStatus] = useState('idle'); // idle | approving | staking | recording | error
   const [errorMsg, setErrorMsg] = useState(null);
 
   const calc = useMemo(() => {
@@ -52,32 +57,60 @@ const BetConfirmationModal = ({
 
   const totalCost = calc?.totalCost ?? Number(betAmount);
   const potentialWinnings = calc?.potentialWinnings ?? 0;
-  const busy = status === 'staking' || status === 'recording';
+  const busy = status === 'approving' || status === 'staking' || status === 'recording';
 
   const handleConfirm = async () => {
     setErrorMsg(null);
 
-    if (!TREASURY_ADDRESS) {
-      setErrorMsg('Staking is not configured yet. Please try again later.');
+    if (!LOTTO_CONTRACT_ADDRESS) {
+      setErrorMsg('The lottery contract is not configured yet.');
       setStatus('error');
       return;
     }
     if (!address || !calc) return;
 
+    const gameType = getOnChainGameTypeIndex(game.type);
+    if (gameType === null) {
+      setErrorMsg('This game is not supported on-chain yet.');
+      setStatus('error');
+      return;
+    }
+
     try {
-      setStatus('staking');
       const amountRaw = cusdToRaw(totalCost);
       if (amountRaw <= 0n) throw new Error('Invalid stake amount');
 
-      const txHash = await writeContractAsync({
+      // 1. Approve cUSD to the contract if needed.
+      const allowance = await publicClient.readContract({
         address: CUSD_ADDRESS,
         abi: erc20Abi,
-        functionName: 'transfer',
-        args: [TREASURY_ADDRESS, amountRaw],
+        functionName: 'allowance',
+        args: [address, LOTTO_CONTRACT_ADDRESS],
       });
 
+      if (allowance < amountRaw) {
+        setStatus('approving');
+        const approveHash = await writeContractAsync({
+          address: CUSD_ADDRESS,
+          abi: erc20Abi,
+          functionName: 'approve',
+          args: [LOTTO_CONTRACT_ADDRESS, amountRaw],
+        });
+        await publicClient.waitForTransactionReceipt({ hash: approveHash });
+      }
+
+      // 2. Place the bet on-chain.
+      setStatus('staking');
+      const drawId = generateRoundId(new Date(), game.type);
+      const txHash = await writeContractAsync({
+        address: LOTTO_CONTRACT_ADDRESS,
+        abi: lottoAbi,
+        functionName: 'placeBet',
+        args: [drawId, gameType, selectedNumbers.map((n) => Number(n)), amountRaw],
+      });
       await publicClient.waitForTransactionReceipt({ hash: txHash });
 
+      // 3. Record the bet (server verifies the BetPlaced event).
       setStatus('recording');
       const res = await walletFetch(address, '/api/bets/place', {
         method: 'POST',
@@ -87,6 +120,7 @@ const BetConfirmationModal = ({
           betMode,
           amount: Number(betAmount),
           txHash,
+          drawId,
           walletAddress: address,
         }),
       });
@@ -104,6 +138,15 @@ const BetConfirmationModal = ({
     }
   };
 
+  const buttonLabel =
+    status === 'approving'
+      ? 'Approve in MiniPay…'
+      : status === 'staking'
+        ? 'Confirm bet in MiniPay…'
+        : status === 'recording'
+          ? 'Placing bet…'
+          : 'Confirm & Pay';
+
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 p-0 sm:p-4">
       <div className="w-full sm:max-w-md bg-white dark:bg-dark-bg-secondary rounded-t-2xl sm:rounded-2xl p-5 shadow-xl">
@@ -118,11 +161,7 @@ const BetConfirmationModal = ({
             <Row label="Combinations" value={String(calc.numberOfCombinations)} />
           )}
           <Row label="Total stake" value={`${formatCusd(totalCost)} cUSD`} highlight />
-          <Row
-            label="Potential win"
-            value={`${formatCusd(potentialWinnings)} cUSD`}
-            positive
-          />
+          <Row label="Potential win" value={`${formatCusd(potentialWinnings)} cUSD`} positive />
         </div>
 
         {errorMsg && (
@@ -144,11 +183,7 @@ const BetConfirmationModal = ({
             disabled={busy}
             className="flex-1 py-3 rounded-lg bg-yellow-500 hover:bg-yellow-600 text-white font-semibold disabled:opacity-60"
           >
-            {status === 'staking'
-              ? 'Confirm in MiniPay…'
-              : status === 'recording'
-                ? 'Placing bet…'
-                : 'Confirm & Pay'}
+            {buttonLabel}
           </button>
         </div>
       </div>
