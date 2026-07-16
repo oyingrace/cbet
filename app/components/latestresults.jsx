@@ -1,7 +1,7 @@
 'use client';
 
 import useSWR from 'swr';
-import { formatCusd } from '@/lib/web3/format';
+import { formatUsdt } from '@/lib/web3/format';
 
 const fetcher = async (url) => {
   const res = await fetch(url);
@@ -65,7 +65,7 @@ export default function LatestResults({ limit = 6 }) {
           {result.totalWinners > 0 && (
             <p className="text-xs text-green-600 dark:text-green-500 mt-2">
               {result.totalWinners} winner{result.totalWinners > 1 ? 's' : ''} ·{' '}
-              {formatCusd(result.totalPrizeAmount)} cUSD paid
+              {formatUsdt(result.totalPrizeAmount)} USDT paid
             </p>
           )}
         </div>

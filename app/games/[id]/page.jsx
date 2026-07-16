@@ -9,9 +9,9 @@ import Navigation from '@/components/navigation';
 import BetConfirmationModal from '@/components/BetConfirmationModal';
 import BetCalculator from '@/lib/services/betCalculator';
 import { isPermBet } from '@/lib/utils/combinationGenerator';
-import { useCusdWallet } from '@/lib/web3/hooks/useCusdWallet';
+import { useUsdtWallet } from '@/lib/web3/hooks/useUsdtWallet';
 import { getAffordability } from '@/lib/utils/affordability';
-import { cusdToRaw, formatCusd } from '@/lib/web3/format';
+import { usdtToRaw, formatUsdt } from '@/lib/web3/format';
 
 const GameDetail = () => {
   const router = useRouter();
@@ -20,12 +20,12 @@ const GameDetail = () => {
 
   const {
     address: walletAddress,
-    balance: cusdBalance,
+    balance: usdtBalance,
     balanceRaw,
     isLoading: balanceLoading,
     error: balanceError,
     refresh: refreshBalance,
-  } = useCusdWallet();
+  } = useUsdtWallet();
 
   const [game, setGame] = useState(null);
   const [error, setError] = useState(null);
@@ -39,10 +39,10 @@ const GameDetail = () => {
   const [isRefreshingForBet, setIsRefreshingForBet] = useState(false);
 
   const totalCostRaw = useMemo(() => {
-    if (betPreview?.totalCost != null) return cusdToRaw(betPreview.totalCost);
+    if (betPreview?.totalCost != null) return usdtToRaw(betPreview.totalCost);
     const amount = Number(betAmount);
     if (!Number.isFinite(amount) || amount <= 0) return 0n;
-    return cusdToRaw(amount);
+    return usdtToRaw(amount);
   }, [betPreview, betAmount]);
 
   const affordability = useMemo(
@@ -161,13 +161,13 @@ const GameDetail = () => {
     if (isPermBet(game.type) && betPreview) {
       const combos = betPreview.numberOfCombinations || 1;
       if (betMode === 'total' && betPreview.stakePerLine < minBetAmount) {
-        return `Min per line is ${minBetAmount} cUSD. With ${combos} lines, min total is ${minBetAmount * combos} cUSD`;
+        return `Min per line is ${minBetAmount} USDT. With ${combos} lines, min total is ${minBetAmount * combos} USDT`;
       }
       if (betMode === 'perLine' && Number(betAmount) < minBetAmount) {
-        return `Stake per line must be at least ${minBetAmount} cUSD`;
+        return `Stake per line must be at least ${minBetAmount} USDT`;
       }
     } else if (!isPermBet(game.type) && Number(betAmount) < minBetAmount) {
-      return `Minimum bet amount is ${minBetAmount} cUSD`;
+      return `Minimum bet amount is ${minBetAmount} USDT`;
     }
 
     if (betValidationError) return betValidationError;
@@ -338,14 +338,14 @@ const GameDetail = () => {
               <div className="flex justify-between items-center">
                 <span className="text-gray-600 dark:text-dark-text-secondary">Available</span>
                 <span className="font-semibold text-gray-900 dark:text-dark-text-primary">
-                  {balanceLoading ? '...' : `${formatCusd(cusdBalance ?? 0)} cUSD`}
+                  {balanceLoading ? '...' : `${formatUsdt(usdtBalance ?? 0)} USDT`}
                 </span>
               </div>
               {betPreview?.totalCost > 0 && (
                 <div className="flex justify-between items-center mt-1">
                   <span className="text-gray-600 dark:text-dark-text-secondary">Total stake</span>
                   <span className="font-semibold text-yellow-600 dark:text-yellow-500">
-                    {formatCusd(betPreview.totalCost)} cUSD
+                    {formatUsdt(betPreview.totalCost)} USDT
                   </span>
                 </div>
               )}
@@ -353,7 +353,7 @@ const GameDetail = () => {
                 <div className="flex justify-between items-center mt-1">
                   <span className="text-red-500">Shortfall</span>
                   <span className="font-semibold text-red-500">
-                    {formatCusd(affordability.shortfall)} cUSD
+                    {formatUsdt(affordability.shortfall)} USDT
                   </span>
                 </div>
               )}
@@ -361,7 +361,7 @@ const GameDetail = () => {
 
             <div className="flex items-center justify-between mb-2">
               <label className="block text-sm font-medium dark:text-dark-text-secondary">
-                {betMode === 'total' ? 'Total Stake (cUSD)' : 'Stake Per Line (cUSD)'}
+                {betMode === 'total' ? 'Total Stake (USDT)' : 'Stake Per Line (USDT)'}
               </label>
               {affordability.status === 'insufficient' && (
                 <button
@@ -418,7 +418,7 @@ const GameDetail = () => {
                   onClick={() => setBetAmount(amount.toString())}
                   className="flex-1 bg-gray-100 dark:bg-dark-bg-primary text-gray-700 dark:text-dark-text-primary py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-dark-bg-secondary transition-colors"
                 >
-                  {amount} cUSD
+                  {amount} USDT
                 </button>
               ))}
             </div>
@@ -433,11 +433,11 @@ const GameDetail = () => {
                   <>
                     <div className="grid grid-cols-2 gap-3 mb-3">
                       <Stat label="Combinations" value={betPreview.numberOfCombinations} />
-                      <Stat label="Per Line" value={`${betPreview.stakePerLine.toFixed(2)} cUSD`} />
-                      <Stat label="Total Cost" value={`${betPreview.totalCost.toFixed(2)} cUSD`} accent />
+                      <Stat label="Per Line" value={`${betPreview.stakePerLine.toFixed(2)} USDT`} />
+                      <Stat label="Total Cost" value={`${betPreview.totalCost.toFixed(2)} USDT`} accent />
                       <Stat
                         label="Win Per Line"
-                        value={`${betPreview.winningsPerLine.toFixed(2)} cUSD`}
+                        value={`${betPreview.winningsPerLine.toFixed(2)} USDT`}
                         positive
                       />
                     </div>
@@ -446,7 +446,7 @@ const GameDetail = () => {
                         Potential Total Winnings
                       </p>
                       <p className="text-2xl font-bold text-green-600 dark:text-green-500">
-                        {betPreview.totalPotentialWinnings.toLocaleString()} cUSD
+                        {betPreview.totalPotentialWinnings.toLocaleString()} USDT
                       </p>
                     </div>
                     <button
@@ -502,13 +502,13 @@ const GameDetail = () => {
                   <div className="bg-white dark:bg-dark-bg-secondary p-4 rounded-lg text-center">
                     <p className="text-xs text-gray-600 dark:text-dark-text-secondary mb-2">Your Stake</p>
                     <p className="text-xl font-bold text-yellow-600 dark:text-yellow-500 mb-4">
-                      {Number(betAmount).toLocaleString()} cUSD
+                      {Number(betAmount).toLocaleString()} USDT
                     </p>
                     <p className="text-xs text-gray-600 dark:text-dark-text-secondary mb-2">
                       Potential Winnings
                     </p>
                     <p className="text-3xl font-bold text-green-600 dark:text-green-500">
-                      {betPreview.potentialWinnings.toLocaleString()} cUSD
+                      {betPreview.potentialWinnings.toLocaleString()} USDT
                     </p>
                   </div>
                 )}

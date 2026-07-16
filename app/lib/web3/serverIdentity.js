@@ -6,7 +6,7 @@ import User from '@/lib/db/models/User';
  * `x-wallet-address` header (sourced from the connected MiniPay account).
  *
  * This is sufficient for reading a player's own history: it exposes no funds
- * and no ability to move money. Any action that moves cUSD is authorised by
+ * and no ability to move money. Any action that moves USDT is authorised by
  * the on-chain transaction itself (verified against Celo), so a spoofed header
  * cannot spend another user's balance. A signed-message (SIWE) session can be
  * layered on later to also protect read privacy.

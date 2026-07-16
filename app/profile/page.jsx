@@ -5,12 +5,12 @@ import Header from '@/components/header';
 import Navigation from '@/components/navigation';
 import { useApp } from '@/lib/context/AppContext';
 import { walletFetch } from '@/lib/web3/apiClient';
-import { useCusdBalance } from '@/lib/web3/hooks/useCusdBalance';
-import { formatCusd } from '@/lib/web3/format';
+import { useUsdtBalance } from '@/lib/web3/hooks/useUsdtBalance';
+import { formatUsdt } from '@/lib/web3/format';
 
 export default function ProfilePage() {
   const { address } = useApp();
-  const { balance } = useCusdBalance();
+  const { balance } = useUsdtBalance();
 
   const { data: bets } = useSWR(
     address ? ['/api/user/bets', address] : null,
@@ -40,10 +40,10 @@ export default function ProfilePage() {
         </div>
 
         <div className="grid grid-cols-2 gap-3">
-          <Stat label="cUSD balance" value={`${formatCusd(balance)} cUSD`} />
+          <Stat label="USDT balance" value={`${formatUsdt(balance)} USDT`} />
           <Stat label="Total bets" value={String(totalBets)} />
-          <Stat label="Total staked" value={`${formatCusd(totalStaked)} cUSD`} />
-          <Stat label="Total won" value={`${formatCusd(totalWon)} cUSD`} positive />
+          <Stat label="Total staked" value={`${formatUsdt(totalStaked)} USDT`} />
+          <Stat label="Total won" value={`${formatUsdt(totalWon)} USDT`} positive />
         </div>
       </div>
       <Navigation activePage="me" />

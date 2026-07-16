@@ -4,12 +4,12 @@ import { useState } from 'react';
 import Header from '@/components/header';
 import Navigation from '@/components/navigation';
 import { useApp } from '@/lib/context/AppContext';
-import { useCusdBalance } from '@/lib/web3/hooks/useCusdBalance';
-import { formatCusd } from '@/lib/web3/format';
+import { useUsdtBalance } from '@/lib/web3/hooks/useUsdtBalance';
+import { formatUsdt } from '@/lib/web3/format';
 
 export default function WalletPage() {
   const { address } = useApp();
-  const { balance, isLoading } = useCusdBalance();
+  const { balance, isLoading } = useUsdtBalance();
   const [copied, setCopied] = useState(false);
 
   const copyAddress = async () => {
@@ -30,9 +30,9 @@ export default function WalletPage() {
         <h1 className="text-xl font-bold dark:text-dark-text-primary mb-4">Wallet</h1>
 
         <div className="rounded-2xl p-6 mb-4 lotto-gradient text-white">
-          <p className="text-sm opacity-90">cUSD balance</p>
+          <p className="text-sm opacity-90">USDT balance</p>
           <p className="text-3xl font-extrabold mt-1">
-            {isLoading ? '…' : `${formatCusd(balance)} cUSD`}
+            {isLoading ? '…' : `${formatUsdt(balance)} USDT`}
           </p>
         </div>
 
@@ -51,7 +51,7 @@ export default function WalletPage() {
             {copied ? 'Copied!' : 'Copy address'}
           </button>
           <p className="text-xs text-gray-500 dark:text-dark-text-secondary mt-3">
-            To top up, receive cUSD to this address in MiniPay.
+            To top up, receive USDT to this address in MiniPay.
           </p>
         </div>
       </div>

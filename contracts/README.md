@@ -1,6 +1,6 @@
 # cbet – Smart Contracts
 
-`CbetLotto` is an upgradeable **cUSD** lottery contract for **Celo** (UUPS proxy),
+`CbetLotto` is an upgradeable **USDT** lottery contract for **Celo** (UUPS proxy),
 adapted from the Dream Lotto contract. Players place bets with `placeBet`
 (stakes are escrowed in the contract); the operator publishes draw results
 on-chain via `publishDrawResult`. Winners are paid off-chain from the escrowed
@@ -31,7 +31,8 @@ Designed for **MiniPay**: players call `placeBet` directly (`approve` +
 1. Create `.env` in `contracts/`:
    - `PRIVATE_KEY` – deployer key (becomes the contract owner / results publisher)
    - `CELO_RPC_URL` – e.g. `https://forno.celo.org`
-   - Optional: `CUSD_ADDRESS`, `MIN_BET` (default `1e18` = 1 cUSD), `MAX_BET` (default `100e18`)
+   - Optional: `USDT_ADDRESS`, `MIN_BET` (default `1e6` = 1 USDT), `MAX_BET` (default `100e6`)
+   - USDT on Celo uses **6 decimals** (verify the token address against MiniPay's list before mainnet)
 
 2. Deploy (implementation + UUPS proxy):
 

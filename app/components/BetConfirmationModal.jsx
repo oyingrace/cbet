@@ -8,16 +8,16 @@ import BetCalculator from '@/lib/services/betCalculator';
 import { walletFetch } from '@/lib/web3/apiClient';
 import { erc20Abi } from '@/lib/web3/erc20Abi';
 import { lottoAbi } from '@/lib/web3/lottoAbi';
-import { cusdToRaw, formatCusd } from '@/lib/web3/format';
+import { usdtToRaw, formatUsdt } from '@/lib/web3/format';
 import { getOnChainGameTypeIndex } from '@/lib/utils/gameTypes';
 import { generateRoundId } from '@/lib/utils/rounds';
-import { CUSD_ADDRESS, LOTTO_CONTRACT_ADDRESS } from '@/lib/web3/constants';
+import { USDT_ADDRESS, LOTTO_CONTRACT_ADDRESS } from '@/lib/web3/constants';
 
 /**
- * Confirms and places a bet by staking cUSD into the CbetLotto contract.
+ * Confirms and places a bet by staking USDT into the CbetLotto contract.
  *
- * Flow (MiniPay signs each step, gas paid in cUSD):
- *   1. approve cUSD to the contract if the allowance is short
+ * Flow (MiniPay signs each step, gas paid in USDT):
+ *   1. approve USDT to the contract if the allowance is short
  *   2. placeBet(drawId, gameType, numbers, amount) — escrows the stake on-chain
  *   3. POST the txHash to /api/bets/place, which verifies the BetPlaced event
  *      on Celo and records the bet.
@@ -77,12 +77,12 @@ const BetConfirmationModal = ({
     }
 
     try {
-      const amountRaw = cusdToRaw(totalCost);
+      const amountRaw = usdtToRaw(totalCost);
       if (amountRaw <= 0n) throw new Error('Invalid stake amount');
 
-      // 1. Approve cUSD to the contract if needed.
+      // 1. Approve USDT to the contract if needed.
       const allowance = await publicClient.readContract({
-        address: CUSD_ADDRESS,
+        address: USDT_ADDRESS,
         abi: erc20Abi,
         functionName: 'allowance',
         args: [address, LOTTO_CONTRACT_ADDRESS],
@@ -91,7 +91,7 @@ const BetConfirmationModal = ({
       if (allowance < amountRaw) {
         setStatus('approving');
         const approveHash = await writeContractAsync({
-          address: CUSD_ADDRESS,
+          address: USDT_ADDRESS,
           abi: erc20Abi,
           functionName: 'approve',
           args: [LOTTO_CONTRACT_ADDRESS, amountRaw],
@@ -160,8 +160,8 @@ const BetConfirmationModal = ({
           {calc?.isPermBet && calc.numberOfCombinations > 1 && (
             <Row label="Combinations" value={String(calc.numberOfCombinations)} />
           )}
-          <Row label="Total stake" value={`${formatCusd(totalCost)} cUSD`} highlight />
-          <Row label="Potential win" value={`${formatCusd(potentialWinnings)} cUSD`} positive />
+          <Row label="Total stake" value={`${formatUsdt(totalCost)} USDT`} highlight />
+          <Row label="Potential win" value={`${formatUsdt(potentialWinnings)} USDT`} positive />
         </div>
 
         {errorMsg && (

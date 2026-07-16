@@ -2,17 +2,17 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 import { FaWallet } from 'react-icons/fa';
-import { useCusdBalance } from '@/lib/web3/hooks/useCusdBalance';
-import { formatCusd } from '@/lib/web3/format';
+import { useUsdtBalance } from '@/lib/web3/hooks/useUsdtBalance';
+import { formatUsdt } from '@/lib/web3/format';
 
 /**
- * App header showing the brand and the player's live cUSD balance (read from
+ * App header showing the brand and the player's live USDT balance (read from
  * MiniPay). Tapping the balance goes to the wallet page.
  */
 const Header = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const { balance, isLoading } = useCusdBalance();
+  const { balance, isLoading } = useUsdtBalance();
 
   const isWalletPage = pathname === '/wallet';
 
@@ -39,7 +39,7 @@ const Header = () => {
               {isLoading ? (
                 <span className="inline-block animate-pulse w-20 h-4 bg-gray-300 dark:bg-gray-700 rounded" />
               ) : (
-                `cUSD ${formatCusd(balance)}`
+                `USDT ${formatUsdt(balance)}`
               )}
             </span>
           </button>

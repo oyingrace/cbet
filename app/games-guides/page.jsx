@@ -53,7 +53,7 @@ export default function GamesGuidesPage() {
 
           <div className="rounded-2xl border border-dream-yellow bg-yellow-50 dark:bg-yellow-500/10 p-4">
             <p className="text-sm text-gray-700 dark:text-dark-text-secondary">
-              All stakes and winnings are in <span className="font-semibold">cUSD</span> and paid
+              All stakes and winnings are in <span className="font-semibold">USDT</span> and paid
               through your MiniPay wallet on Celo.
             </p>
           </div>

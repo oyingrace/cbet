@@ -2,19 +2,19 @@
 
 import { useCallback } from 'react';
 import { useAccount, useReadContract } from 'wagmi';
-import { CUSD_ADDRESS, STAKE_TOKEN_DECIMALS } from '@/lib/web3/constants';
+import { USDT_ADDRESS, STAKE_TOKEN_DECIMALS } from '@/lib/web3/constants';
 import { erc20Abi } from '@/lib/web3/erc20Abi';
 
 /**
- * MiniPay wallet + live cUSD balance, shaped for the betting screen.
- * Returns the connected address, balance (whole cUSD + raw bigint), load state,
+ * MiniPay wallet + live USDT balance, shaped for the betting screen.
+ * Returns the connected address, balance (whole USDT + raw bigint), load state,
  * and a `refresh()` that refetches and resolves with the fresh raw balance.
  */
-export function useCusdWallet() {
+export function useUsdtWallet() {
   const { address } = useAccount();
 
   const { data, isLoading, error, refetch } = useReadContract({
-    address: CUSD_ADDRESS,
+    address: USDT_ADDRESS,
     abi: erc20Abi,
     functionName: 'balanceOf',
     args: address ? [address] : undefined,

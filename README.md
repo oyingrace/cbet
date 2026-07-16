@@ -1,6 +1,6 @@
 # cbet
 
-A numbers-lottery game (a port of Dream Lotto) built as a **MiniPay Mini App** on the **Celo** blockchain. The game stakes and settles in **cUSD**.
+A numbers-lottery game (a port of Dream Lotto) built as a **MiniPay Mini App** on the **Celo** blockchain. The game stakes and settles in **USDT**.
 
 ## How the wallet works
 
@@ -9,7 +9,7 @@ provider at `window.ethereum` with `isMiniPay === true`, so the app:
 
 - auto-connects the wallet on load — there is **no "Connect Wallet" button**,
 - identifies the player by their Celo **wallet address**,
-- stakes in **cUSD** using **legacy transactions** (MiniPay ignores EIP-1559
+- stakes in **USDT** using **legacy transactions** (MiniPay ignores EIP-1559
   fields).
 
 The MiniPay integration lives in `app/lib/web3/` (`config.ts`, `constants.ts`,

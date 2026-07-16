@@ -18,7 +18,7 @@ const betSchema = new mongoose.Schema(
         required: true,
       },
     ],
-    // Stake amount, denominated in cUSD.
+    // Stake amount, denominated in USDT.
     amount: {
       type: Number,
       required: true,
@@ -26,8 +26,8 @@ const betSchema = new mongoose.Schema(
     },
     currency: {
       type: String,
-      enum: ['cUSD'],
-      default: 'cUSD',
+      enum: ['USDT'],
+      default: 'USDT',
     },
     // On-chain settlement details (Celo).
     chainId: { type: Number, default: null },

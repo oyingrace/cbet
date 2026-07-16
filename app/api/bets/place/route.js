@@ -8,7 +8,7 @@ import { getWalletAddressFromRequest, getOrCreateUser } from '@/lib/web3/serverI
 import { getServerPublicClient } from '@/lib/web3/serverClient';
 import { lottoAbi } from '@/lib/web3/lottoAbi';
 import { LOTTO_CONTRACT_ADDRESS, CHAIN_ID_CELO } from '@/lib/web3/constants';
-import { cusdToRaw } from '@/lib/web3/format';
+import { usdtToRaw } from '@/lib/web3/format';
 import BetCalculator from '@/lib/services/betCalculator';
 import { getOnChainGameTypeIndex } from '@/lib/utils/gameTypes';
 
@@ -16,7 +16,7 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 /**
- * Records a bet after the player has staked cUSD into the CbetLotto contract
+ * Records a bet after the player has staked USDT into the CbetLotto contract
  * from MiniPay.
  *
  * Trust model: the amount and winnings are recomputed server-side, and the
@@ -88,7 +88,7 @@ export async function POST(request) {
       gameOdds: game.odds,
     });
 
-    const expectedRaw = cusdToRaw(calc.totalCost);
+    const expectedRaw = usdtToRaw(calc.totalCost);
     const expectedGameType = getOnChainGameTypeIndex(game.type);
 
     // Verify the on-chain BetPlaced event.
@@ -145,7 +145,7 @@ export async function POST(request) {
       user: user._id,
       type: 'TICKET_PURCHASE',
       amount: calc.totalCost,
-      currency: 'cUSD',
+      currency: 'USDT',
       chainId: CHAIN_ID_CELO,
       txHash,
       walletAddress: player.toLowerCase(),
@@ -159,7 +159,7 @@ export async function POST(request) {
       game: game._id,
       numbers: parsedNumbers,
       amount: calc.totalCost,
-      currency: 'cUSD',
+      currency: 'USDT',
       chainId: CHAIN_ID_CELO,
       txHash,
       walletAddress: player.toLowerCase(),

@@ -10,14 +10,15 @@ import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
 /**
  * @title CbetLotto
- * @notice Upgradeable cUSD lottery contract for Celo (UUPS). Accepts bets
+ * @notice Upgradeable USDT lottery contract for Celo (UUPS). Accepts bets
  *         (stakes are escrowed in the contract) and publishes draw results
  *         on-chain. Payout logic can be added in a future implementation
  *         upgrade; today winners are paid off-chain by the operator, funded
  *         from the escrowed stakes via `withdrawToken`.
  *
- * @dev Adapted from the Dream Lotto contract. Differences: denominated in cUSD
- *      (18 decimals) rather than USDC (6), and adds combo-5 (gameType 11).
+ * @dev Adapted from the Dream Lotto contract. Differences: denominated in USDT
+ *      on Celo (6 decimals), and adds combo-5 (gameType 11). The contract itself
+ *      is token-agnostic — decimals only affect the min/max bet configuration.
  *
  *      Designed for MiniPay: players call `placeBet` directly (approve +
  *      placeBet), signing with their MiniPay wallet — no permit/relayer needed.
@@ -30,11 +31,11 @@ contract CbetLotto is Initializable, OwnableUpgradeable, ReentrancyGuard, UUPSUp
         _disableInitializers();
     }
 
-    /// @notice Stake token (cUSD on Celo, 18 decimals).
+    /// @notice Stake token (USDT on Celo, 6 decimals).
     IERC20 public token;
 
     uint256 public nextTicketId;
-    uint256 public minBet; // 18 decimals (e.g. 1e18 = 1 cUSD)
+    uint256 public minBet; // token base units (USDT = 6 decimals, e.g. 1e6 = 1 USDT)
     uint256 public maxBet;
 
     struct DrawResult {
@@ -170,7 +171,7 @@ contract CbetLotto is Initializable, OwnableUpgradeable, ReentrancyGuard, UUPSUp
      * @param drawId    Round identifier, e.g. "20260716-1400".
      * @param gameType  On-chain game type (see encoding above).
      * @param numbers   Selected numbers.
-     * @param amount    Stake amount in cUSD base units (18 decimals).
+     * @param amount    Stake amount in USDT base units (6 decimals).
      */
     function placeBet(
         string calldata drawId,
