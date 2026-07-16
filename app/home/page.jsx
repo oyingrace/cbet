@@ -7,6 +7,7 @@ import { Navigation } from '../components/navigation';
 import Header from '../components/header';
 import QuickActions from '../components/quickactions';
 import LottoCard from '../components/LottoCard';
+import LatestResults from '../components/latestresults';
 
 const FEATURED_GAME_TYPES = ['draw-2', 'draw-3'];
 
@@ -131,6 +132,21 @@ export default function DashboardPage() {
               ))}
             </div>
           )}
+        </div>
+
+        <div className="mb-2">
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="font-semibold text-gray-800 dark:text-dark-text-primary">
+              Latest Results
+            </h3>
+            <Link
+              href="/results"
+              className="text-sm text-dream-blue dark:text-dream-yellow transition-colors duration-200"
+            >
+              View All
+            </Link>
+          </div>
+          <LatestResults />
         </div>
       </div>
 
