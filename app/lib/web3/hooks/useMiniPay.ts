@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAccount, useConnect } from "wagmi";
 import { injected } from "wagmi/connectors";
 
@@ -9,28 +9,35 @@ export interface UseMiniPayResult {
   isMiniPay: boolean;
   /** True once the MiniPay host has been detected (client-side only). */
   isReady: boolean;
-  /** The connected MiniPay wallet address, if any. */
+  /** The connected wallet address, if any. */
   address?: `0x${string}`;
-  /** True while the injected wallet is connected. */
+  /** True while a wallet is connected. */
   isConnected: boolean;
+  /** True while a connection attempt is in flight. */
+  isConnecting: boolean;
+  /** Manually connect an injected wallet (used outside MiniPay). */
+  connectWallet: () => void;
 }
 
 /**
- * Detects the MiniPay host and auto-connects the injected wallet.
+ * Detects the MiniPay host and manages the wallet connection.
  *
- * MiniPay exposes its provider at `window.ethereum` with `isMiniPay === true`.
- * When detected we eagerly connect the `injected` connector so the rest of the
- * app can read the account without ever showing a connect button — MiniPay
- * treats the connection as implicit.
- *
- * Outside MiniPay (e.g. a normal browser) `isMiniPay` stays false and nothing
- * is auto-connected.
+ * - **Inside MiniPay** (`window.ethereum.isMiniPay === true`): auto-connects the
+ *   injected wallet, so the UI never shows a connect button — the connection is
+ *   implicit.
+ * - **Outside MiniPay** (normal browser): does not auto-connect. `connectWallet`
+ *   lets the UI offer a "Connect Wallet" button for an injected wallet, so the
+ *   app is still usable/testable outside MiniPay.
  */
 export function useMiniPay(): UseMiniPayResult {
   const [isMiniPay, setIsMiniPay] = useState(false);
   const [isReady, setIsReady] = useState(false);
-  const { connect } = useConnect();
+  const { connect, isPending } = useConnect();
   const { address, isConnected } = useAccount();
+
+  const connectWallet = useCallback(() => {
+    connect({ connector: injected() });
+  }, [connect]);
 
   useEffect(() => {
     const detected =
@@ -43,5 +50,12 @@ export function useMiniPay(): UseMiniPayResult {
     }
   }, [connect, isConnected]);
 
-  return { isMiniPay, isReady, address, isConnected };
+  return {
+    isMiniPay,
+    isReady,
+    address,
+    isConnected,
+    isConnecting: isPending,
+    connectWallet,
+  };
 }

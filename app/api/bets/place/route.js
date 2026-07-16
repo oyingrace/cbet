@@ -6,39 +6,29 @@ import Bet from '@/lib/db/models/Bet';
 import Transaction from '@/lib/db/models/Transaction';
 import { getWalletAddressFromRequest, getOrCreateUser } from '@/lib/web3/serverIdentity';
 import { getServerPublicClient } from '@/lib/web3/serverClient';
-import { CUSD_ADDRESS, TREASURY_ADDRESS, CHAIN_ID_CELO } from '@/lib/web3/constants';
+import { lottoAbi } from '@/lib/web3/lottoAbi';
+import { LOTTO_CONTRACT_ADDRESS, CHAIN_ID_CELO } from '@/lib/web3/constants';
 import { cusdToRaw } from '@/lib/web3/format';
 import BetCalculator from '@/lib/services/betCalculator';
-import { generateRoundId } from '@/lib/utils/rounds';
+import { getOnChainGameTypeIndex } from '@/lib/utils/gameTypes';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-const transferEventAbi = [
-  {
-    type: 'event',
-    name: 'Transfer',
-    inputs: [
-      { indexed: true, name: 'from', type: 'address' },
-      { indexed: true, name: 'to', type: 'address' },
-      { indexed: false, name: 'value', type: 'uint256' },
-    ],
-  },
-];
-
 /**
- * Records a bet after the player has staked cUSD to the treasury from MiniPay.
+ * Records a bet after the player has staked cUSD into the CbetLotto contract
+ * from MiniPay.
  *
  * Trust model: the amount and winnings are recomputed server-side, and the
- * on-chain transaction is verified against Celo — we confirm a cUSD Transfer
- * from the player to the treasury for at least the computed stake. A spoofed
- * wallet header cannot forge this, and each txHash can back only one bet.
+ * on-chain transaction is verified against Celo — we confirm a `BetPlaced`
+ * event from the lottery contract for this player, game type and at least the
+ * computed stake. Each txHash can back only one bet.
  */
 export async function POST(request) {
   try {
-    if (!TREASURY_ADDRESS) {
+    if (!LOTTO_CONTRACT_ADDRESS) {
       return NextResponse.json(
-        { success: false, error: 'Treasury not configured' },
+        { success: false, error: 'Lottery contract not configured' },
         { status: 500 }
       );
     }
@@ -49,10 +39,7 @@ export async function POST(request) {
     const walletAddress = headerAddress || (body.walletAddress ?? null);
 
     if (!walletAddress) {
-      return NextResponse.json(
-        { success: false, error: 'Wallet address required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: 'Wallet address required' }, { status: 400 });
     }
     if (!gameId || !Array.isArray(numbers) || numbers.length === 0) {
       return NextResponse.json(
@@ -61,20 +48,14 @@ export async function POST(request) {
       );
     }
     if (!txHash || typeof txHash !== 'string') {
-      return NextResponse.json(
-        { success: false, error: 'Staking txHash required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: 'Staking txHash required' }, { status: 400 });
     }
 
     await connectDB();
 
     const game = await Game.findById(gameId).lean();
     if (!game || !game.isActive) {
-      return NextResponse.json(
-        { success: false, error: 'Game not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ success: false, error: 'Game not found' }, { status: 404 });
     }
 
     // Idempotency: one bet per staking transaction.
@@ -96,10 +77,7 @@ export async function POST(request) {
       mode: betMode,
     });
     if (!validation.valid) {
-      return NextResponse.json(
-        { success: false, error: validation.error },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: validation.error }, { status: 400 });
     }
 
     const calc = BetCalculator.calculateBet({
@@ -111,8 +89,9 @@ export async function POST(request) {
     });
 
     const expectedRaw = cusdToRaw(calc.totalCost);
+    const expectedGameType = getOnChainGameTypeIndex(game.type);
 
-    // Verify the staking transaction on Celo.
+    // Verify the on-chain BetPlaced event.
     const client = getServerPublicClient();
     let receipt;
     try {
@@ -125,29 +104,25 @@ export async function POST(request) {
     }
 
     if (receipt.status !== 'success') {
-      return NextResponse.json(
-        { success: false, error: 'Staking transaction failed' },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: 'Staking transaction failed' }, { status: 400 });
     }
 
-    const transfers = parseEventLogs({
-      abi: transferEventAbi,
+    const events = parseEventLogs({
+      abi: lottoAbi,
       logs: receipt.logs,
-      eventName: 'Transfer',
+      eventName: 'BetPlaced',
     });
 
-    const cusd = getAddress(CUSD_ADDRESS);
-    const treasury = getAddress(TREASURY_ADDRESS);
-    const from = getAddress(walletAddress);
+    const lotto = getAddress(LOTTO_CONTRACT_ADDRESS);
+    const player = getAddress(walletAddress);
 
-    const matched = transfers.find((log) => {
+    const matched = events.find((log) => {
       try {
         return (
-          getAddress(log.address) === cusd &&
-          getAddress(log.args.from) === from &&
-          getAddress(log.args.to) === treasury &&
-          log.args.value >= expectedRaw
+          getAddress(log.address) === lotto &&
+          getAddress(log.args.player) === player &&
+          Number(log.args.gameType) === expectedGameType &&
+          log.args.amount >= expectedRaw
         );
       } catch {
         return false;
@@ -156,13 +131,15 @@ export async function POST(request) {
 
     if (!matched) {
       return NextResponse.json(
-        { success: false, error: 'No matching cUSD stake to treasury in transaction' },
+        { success: false, error: 'No matching BetPlaced event in transaction' },
         { status: 400 }
       );
     }
 
-    const user = await getOrCreateUser(from);
-    const roundId = generateRoundId(new Date(), game.type);
+    // The round id is taken from the on-chain event (source of truth).
+    const roundId = matched.args.drawId;
+
+    const user = await getOrCreateUser(player);
 
     const transaction = await Transaction.create({
       user: user._id,
@@ -171,7 +148,7 @@ export async function POST(request) {
       currency: 'cUSD',
       chainId: CHAIN_ID_CELO,
       txHash,
-      walletAddress: from.toLowerCase(),
+      walletAddress: player.toLowerCase(),
       status: 'COMPLETED',
       reference: `ticket_${txHash}`,
       description: `Stake for ${game.name}`,
@@ -185,7 +162,7 @@ export async function POST(request) {
       currency: 'cUSD',
       chainId: CHAIN_ID_CELO,
       txHash,
-      walletAddress: from.toLowerCase(),
+      walletAddress: player.toLowerCase(),
       potentialWinnings: calc.potentialWinnings,
       betType: game.type,
       ticketCost: calc.totalCost,
@@ -212,9 +189,6 @@ export async function POST(request) {
     });
   } catch (error) {
     console.error('Place bet error:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to place bet' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: 'Failed to place bet' }, { status: 500 });
   }
 }
