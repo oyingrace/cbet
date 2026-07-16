@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 
 /**
- * A record of on-chain cUSD activity tied to a user. Unlike the source app,
+ * A record of on-chain USDT activity tied to a user. Unlike the source app,
  * cbet has no app-managed balance ledger and no off-chain Wallet document —
- * stakes and payouts are cUSD transfers on Celo, so every money-moving
+ * stakes and payouts are USDT transfers on Celo, so every money-moving
  * transaction carries a `txHash` and originating `walletAddress`.
  */
 const transactionSchema = new mongoose.Schema(
@@ -24,8 +24,8 @@ const transactionSchema = new mongoose.Schema(
     },
     currency: {
       type: String,
-      enum: ['cUSD'],
-      default: 'cUSD',
+      enum: ['USDT'],
+      default: 'USDT',
     },
     chainId: { type: Number, default: null },
     txHash: { type: String, default: null },

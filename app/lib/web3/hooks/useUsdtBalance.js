@@ -1,18 +1,18 @@
 'use client';
 
 import { useAccount, useReadContract } from 'wagmi';
-import { CUSD_ADDRESS, STAKE_TOKEN_DECIMALS } from '@/lib/web3/constants';
+import { USDT_ADDRESS, STAKE_TOKEN_DECIMALS } from '@/lib/web3/constants';
 import { erc20Abi } from '@/lib/web3/erc20Abi';
 
 /**
- * Reads the connected MiniPay wallet's cUSD balance from Celo.
- * Returns the balance as a Number (whole cUSD) plus the raw bigint.
+ * Reads the connected MiniPay wallet's USDT balance from Celo.
+ * Returns the balance as a Number (whole USDT) plus the raw bigint.
  */
-export function useCusdBalance() {
+export function useUsdtBalance() {
   const { address } = useAccount();
 
   const { data, isLoading, refetch, error } = useReadContract({
-    address: CUSD_ADDRESS,
+    address: USDT_ADDRESS,
     abi: erc20Abi,
     functionName: 'balanceOf',
     args: address ? [address] : undefined,

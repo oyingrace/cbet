@@ -3,7 +3,7 @@
 import useSWR from 'swr';
 import { useApp } from '@/lib/context/AppContext';
 import { walletFetch } from '@/lib/web3/apiClient';
-import { formatCusd } from '@/lib/web3/format';
+import { formatUsdt } from '@/lib/web3/format';
 
 const statusStyles = {
   pending: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/10 dark:text-yellow-400',
@@ -64,7 +64,7 @@ export default function BetHistory({ limit = 10 }) {
           </div>
           <div className="text-right shrink-0 ml-3">
             <p className="text-sm font-semibold text-gray-800 dark:text-dark-text-primary">
-              {formatCusd(bet.amount)} cUSD
+              {formatUsdt(bet.amount)} USDT
             </p>
             <span
               className={`inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${

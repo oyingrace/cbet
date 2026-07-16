@@ -6,7 +6,7 @@ import '@/lib/db/models/User';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-/** Top players ranked by total cUSD won. */
+/** Top players ranked by total USDT won. */
 export async function GET(request) {
   try {
     await connectDB();

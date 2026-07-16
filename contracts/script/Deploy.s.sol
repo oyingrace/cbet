@@ -9,10 +9,10 @@ contract DeployScript is Script {
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
 
-        // Celo mainnet cUSD: 0x765DE816845861e75A25fCA122bb6898B8B1282a
-        address stakeToken = vm.envOr("CUSD_ADDRESS", address(0x765DE816845861e75A25fCA122bb6898B8B1282a));
-        uint256 minBet = vm.envOr("MIN_BET", uint256(1e18)); // 1 cUSD (18 decimals)
-        uint256 maxBet = vm.envOr("MAX_BET", uint256(100 * 1e18)); // 100 cUSD
+        // Celo mainnet native USD₮ (Tether): 0x48065fbBE25f71C9282ddf5e1cD6D6A887483D5e
+        address stakeToken = vm.envOr("USDT_ADDRESS", address(0x48065fbBE25f71C9282ddf5e1cD6D6A887483D5e));
+        uint256 minBet = vm.envOr("MIN_BET", uint256(1e6)); // 1 USDT (6 decimals)
+        uint256 maxBet = vm.envOr("MAX_BET", uint256(100 * 1e6)); // 100 USDT
 
         vm.startBroadcast(deployerPrivateKey);
 

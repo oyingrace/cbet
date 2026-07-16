@@ -1,4 +1,4 @@
-/** Minimal ERC-20 ABI used for cUSD (balance, transfer, allowance, approve). */
+/** Minimal ERC-20 ABI used for USDT (balance, transfer, allowance, approve). */
 export const erc20Abi = [
   {
     type: 'function',

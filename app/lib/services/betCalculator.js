@@ -1,7 +1,7 @@
 /**
  * Bet Calculator Service
  * Handles all bet-related calculations including combinations, costs, and winnings.
- * Amounts are denominated in cUSD.
+ * Amounts are denominated in USDT.
  */
 
 import {
@@ -135,21 +135,21 @@ class BetCalculator {
           valid: false,
           error:
             mode === 'total'
-              ? `Minimum total stake is ${minTotal} cUSD (${minBetAmount} cUSD × ${numberOfCombinations} lines)`
-              : `Minimum stake per line is ${minBetAmount} cUSD`,
+              ? `Minimum total stake is ${minTotal} USDT (${minBetAmount} USDT × ${numberOfCombinations} lines)`
+              : `Minimum stake per line is ${minBetAmount} USDT`,
         };
       }
 
       if (totalCost > maxBetAmount) {
-        return { valid: false, error: `maximum bet is ${maxBetAmount} cUSD` };
+        return { valid: false, error: `maximum bet is ${maxBetAmount} USDT` };
       }
     } else {
       if (amount < minBetAmount) {
-        return { valid: false, error: `Minimum bet is ${minBetAmount} cUSD` };
+        return { valid: false, error: `Minimum bet is ${minBetAmount} USDT` };
       }
 
       if (amount > maxBetAmount) {
-        return { valid: false, error: `Maximum bet is ${maxBetAmount} cUSD` };
+        return { valid: false, error: `Maximum bet is ${maxBetAmount} USDT` };
       }
     }
 

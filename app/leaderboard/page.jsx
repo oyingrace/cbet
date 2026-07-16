@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import Header from '@/components/header';
 import Navigation from '@/components/navigation';
 import { useApp } from '@/lib/context/AppContext';
-import { formatCusd } from '@/lib/web3/format';
+import { formatUsdt } from '@/lib/web3/format';
 
 const fetcher = async (url) => {
   const res = await fetch(url);
@@ -67,7 +67,7 @@ export default function LeaderboardPage() {
                     </span>
                   </div>
                   <span className="text-sm font-semibold text-green-600 dark:text-green-500 shrink-0">
-                    {formatCusd(row.totalWon)} cUSD
+                    {formatUsdt(row.totalWon)} USDT
                   </span>
                 </div>
               );

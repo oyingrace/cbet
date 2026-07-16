@@ -1,7 +1,7 @@
-import { rawToCusd, formatCusd } from '@/lib/web3/format';
+import { rawToUsdt, formatUsdt } from '@/lib/web3/format';
 
 /**
- * Derive bet affordability from on-chain cUSD balance and total stake (raw units).
+ * Derive bet affordability from on-chain USDT balance and total stake (raw units).
  * @returns {'checking'|'unknown'|'error'|'sufficient'|'insufficient'} status
  */
 export function getAffordability({
@@ -39,10 +39,10 @@ export function getAffordability({
   }
 
   const shortfallRaw = cost - balance;
-  const shortfall = rawToCusd(shortfallRaw);
+  const shortfall = rawToUsdt(shortfallRaw);
   return {
     status: 'insufficient',
-    message: `Need ${formatCusd(shortfall)} more cUSD`,
+    message: `Need ${formatUsdt(shortfall)} more USDT`,
     shortfall,
     shortfallRaw,
   };

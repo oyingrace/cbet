@@ -45,7 +45,7 @@ const gameSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    // Stake bounds are denominated in cUSD.
+    // Stake bounds are denominated in USDT.
     minBetAmount: {
       type: Number,
       required: true,

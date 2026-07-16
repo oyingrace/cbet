@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "cbet",
-  description: "A numbers lottery on Celo — play with cUSD in MiniPay.",
+  description: "A numbers lottery on Celo — play with USDT in MiniPay.",
 };
 
 export const viewport: Viewport = {

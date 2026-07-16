@@ -1,5 +1,5 @@
 /**
- * Seed the games collection with cbet's lottery lineup (cUSD stakes).
+ * Seed the games collection with cbet's lottery lineup (USDT stakes).
  *
  * Usage:
  *   node --env-file=.env.local scripts/seed-games.mjs
