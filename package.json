@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed:games": "node --env-file=.env.local scripts/seed-games.mjs"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.7",
