@@ -16,21 +16,31 @@ if (!MONGODB_URI) {
 }
 
 const DRAW_COMBO_SCHEDULE = [
-  { time: '09:00', isActive: true },
-  { time: '11:15', isActive: true },
+  { time: '08:00', isActive: true },
+  { time: '09:30', isActive: true },
+  { time: '11:00', isActive: true },
+  { time: '12:30', isActive: true },
   { time: '14:00', isActive: true },
+  { time: '15:30', isActive: true },
   { time: '17:00', isActive: true },
-  { time: '20:30', isActive: true },
+  { time: '18:30', isActive: true },
+  { time: '20:00', isActive: true },
+  { time: '21:30', isActive: true },
 ];
 
 const SPECIAL_SCHEDULE_A = [
-  { time: '10:00', isActive: true },
+  { time: '08:30', isActive: true },
+  { time: '13:00', isActive: true },
+  { time: '17:30', isActive: true },
   { time: '22:00', isActive: true },
 ];
 
 const SPECIAL_SCHEDULE_B = [
+  { time: '10:00', isActive: true },
   { time: '12:00', isActive: true },
+  { time: '14:00', isActive: true },
   { time: '16:00', isActive: true },
+  { time: '18:00', isActive: true },
   { time: '20:00', isActive: true },
 ];
 
