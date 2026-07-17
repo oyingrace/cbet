@@ -35,7 +35,7 @@ const BetConfirmationModal = ({
   const { address } = useApp();
   const { writeContractAsync } = useWriteContract();
   const publicClient = usePublicClient();
-  const [status, setStatus] = useState('idle'); // idle | approving | staking | recording | error
+  const [status, setStatus] = useState('idle'); // idle | preparing-gas | approving | staking | recording | error
   const [errorMsg, setErrorMsg] = useState(null);
 
   const calc = useMemo(() => {
@@ -57,7 +57,11 @@ const BetConfirmationModal = ({
 
   const totalCost = calc?.totalCost ?? Number(betAmount);
   const potentialWinnings = calc?.potentialWinnings ?? 0;
-  const busy = status === 'approving' || status === 'staking' || status === 'recording';
+  const busy =
+    status === 'preparing-gas' ||
+    status === 'approving' ||
+    status === 'staking' ||
+    status === 'recording';
 
   const handleConfirm = async () => {
     setErrorMsg(null);
@@ -79,6 +83,19 @@ const BetConfirmationModal = ({
     try {
       const amountRaw = usdtToRaw(totalCost);
       if (amountRaw <= 0n) throw new Error('Invalid stake amount');
+
+      // 0. Make sure the wallet has gas. MiniPay wallets often hold only
+      // USDT (MiniPay doesn't yet support paying gas in USDT), so the relayer
+      // tops up a small amount of CELO if needed before any transaction.
+      setStatus('preparing-gas');
+      const gasRes = await walletFetch(address, '/api/wallet/ensure-gas', {
+        method: 'POST',
+        body: JSON.stringify({ walletAddress: address }),
+      });
+      const gasData = await gasRes.json();
+      if (!gasRes.ok || !gasData.success) {
+        throw new Error(gasData.error || 'Could not prepare gas for this transaction');
+      }
 
       // 1. Approve USDT to the contract if needed.
       const allowance = await publicClient.readContract({
@@ -139,13 +156,15 @@ const BetConfirmationModal = ({
   };
 
   const buttonLabel =
-    status === 'approving'
-      ? 'Approve in MiniPay…'
-      : status === 'staking'
-        ? 'Confirm bet in MiniPay…'
-        : status === 'recording'
-          ? 'Placing bet…'
-          : 'Confirm & Pay';
+    status === 'preparing-gas'
+      ? 'Preparing gas…'
+      : status === 'approving'
+        ? 'Approve in MiniPay…'
+        : status === 'staking'
+          ? 'Confirm bet in MiniPay…'
+          : status === 'recording'
+            ? 'Placing bet…'
+            : 'Confirm & Pay';
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 p-0 sm:p-4">
