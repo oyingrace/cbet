@@ -83,7 +83,3 @@ contracts/        # CbetLotto Solidity contract + deploy scripts
 scripts/          # seed-games
 ```
 
-## Related projects
-
-- **`contracts/`** — the `CbetLotto` smart contract (Celo/USDT) and deployment scripts.
-- **cbet-cron** — the scheduler service that runs draws, publishes results on-chain, and pays winners.
