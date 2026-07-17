@@ -16,31 +16,47 @@ if (!MONGODB_URI) {
 }
 
 const DRAW_COMBO_SCHEDULE = [
-  { time: '08:00', isActive: true },
-  { time: '09:30', isActive: true },
-  { time: '11:00', isActive: true },
+  { time: '00:00', isActive: true },
+  { time: '02:30', isActive: true },
+  { time: '05:00', isActive: true },
+  { time: '07:30', isActive: true },
+  { time: '10:00', isActive: true },
   { time: '12:30', isActive: true },
-  { time: '14:00', isActive: true },
-  { time: '15:30', isActive: true },
-  { time: '17:00', isActive: true },
-  { time: '18:30', isActive: true },
+  { time: '15:00', isActive: true },
+  { time: '17:30', isActive: true },
   { time: '20:00', isActive: true },
-  { time: '21:30', isActive: true },
+  { time: '22:30', isActive: true },
 ];
 
-const SPECIAL_SCHEDULE_A = [
-  { time: '08:30', isActive: true },
-  { time: '13:00', isActive: true },
-  { time: '17:30', isActive: true },
+const LUCKY10_SCHEDULE = [
+  { time: '00:00', isActive: true },
+  { time: '06:00', isActive: true },
+  { time: '12:00', isActive: true },
+  { time: '18:00', isActive: true },
+];
+
+const MEGA20_SCHEDULE = [
+  { time: '03:00', isActive: true },
+  { time: '09:00', isActive: true },
+  { time: '15:00', isActive: true },
+  { time: '21:00', isActive: true },
+];
+
+const TURBO30_SCHEDULE = [
+  { time: '02:00', isActive: true },
+  { time: '06:00', isActive: true },
+  { time: '10:00', isActive: true },
+  { time: '14:00', isActive: true },
+  { time: '18:00', isActive: true },
   { time: '22:00', isActive: true },
 ];
 
-const SPECIAL_SCHEDULE_B = [
-  { time: '10:00', isActive: true },
+const ULTRA40_SCHEDULE = [
+  { time: '00:00', isActive: true },
+  { time: '04:00', isActive: true },
+  { time: '08:00', isActive: true },
   { time: '12:00', isActive: true },
-  { time: '14:00', isActive: true },
   { time: '16:00', isActive: true },
-  { time: '18:00', isActive: true },
   { time: '20:00', isActive: true },
 ];
 
@@ -60,10 +76,10 @@ const games = [
   { name: 'Combo 5', type: 'combo-5', description: 'Cover every 5-number combination from your picks.', minNumbers: 5, maxNumbers: 10, odds: 44000, drawSchedule: DRAW_COMBO_SCHEDULE },
 
   // Special — pick 2; win if any of your numbers match the draw.
-  { name: 'Lucky 10', type: 'lucky-10', description: 'Pick 2 numbers. Win if any match the draw.', minNumbers: 2, maxNumbers: 2, odds: 10, drawSchedule: SPECIAL_SCHEDULE_A },
-  { name: 'Mega 20', type: 'mega-20', description: 'Pick 2 numbers. Win if any match the draw.', minNumbers: 2, maxNumbers: 2, odds: 20, drawSchedule: SPECIAL_SCHEDULE_A },
-  { name: 'Turbo 30', type: 'turbo-30', description: 'Pick 2 numbers. Win if any match the draw.', minNumbers: 2, maxNumbers: 2, odds: 30, drawSchedule: SPECIAL_SCHEDULE_B },
-  { name: 'Ultra 40', type: 'ultra-40', description: 'Pick 2 numbers. Win if any match the draw.', minNumbers: 2, maxNumbers: 2, odds: 40, drawSchedule: SPECIAL_SCHEDULE_B },
+  { name: 'Lucky 10', type: 'lucky-10', description: 'Pick 2 numbers. Win if any match the draw.', minNumbers: 2, maxNumbers: 2, odds: 10, drawSchedule: LUCKY10_SCHEDULE },
+  { name: 'Mega 20', type: 'mega-20', description: 'Pick 2 numbers. Win if any match the draw.', minNumbers: 2, maxNumbers: 2, odds: 20, drawSchedule: MEGA20_SCHEDULE },
+  { name: 'Turbo 30', type: 'turbo-30', description: 'Pick 2 numbers. Win if any match the draw.', minNumbers: 2, maxNumbers: 2, odds: 30, drawSchedule: TURBO30_SCHEDULE },
+  { name: 'Ultra 40', type: 'ultra-40', description: 'Pick 2 numbers. Win if any match the draw.', minNumbers: 2, maxNumbers: 2, odds: 40, drawSchedule: ULTRA40_SCHEDULE },
 ].map((g) => ({
   ...g,
   numberRange: range,
