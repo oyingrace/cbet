@@ -16,9 +16,8 @@ import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
  *         upgrade; today winners are paid off-chain by the operator, funded
  *         from the escrowed stakes via `withdrawToken`.
  *
- * @dev Adapted from the Dream Lotto contract. Differences: denominated in USDT
- *      on Celo (6 decimals), and adds combo-5 (gameType 11). The contract itself
- *      is token-agnostic — decimals only affect the min/max bet configuration.
+ * @dev Denominated in USDT on Celo (6 decimals). The contract itself is
+ *      token-agnostic — decimals only affect the min/max bet configuration.
  *
  *      Designed for MiniPay: players call `placeBet` directly (approve +
  *      placeBet), signing with their MiniPay wallet — no permit/relayer needed.
