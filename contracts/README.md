@@ -1,7 +1,7 @@
 # cbet – Smart Contracts
 
-`CbetLotto` is an upgradeable **USDT** lottery contract for **Celo** (UUPS proxy),
-adapted from the Dream Lotto contract. Players place bets with `placeBet`
+`CbetLotto` is an upgradeable **USDT** lottery contract for **Celo** (UUPS proxy).
+Players place bets with `placeBet`
 (stakes are escrowed in the contract); the operator publishes draw results
 on-chain via `publishDrawResult`. Winners are paid off-chain from the escrowed
 stakes (funded via `withdrawToken`); on-chain payout logic can be added in a
