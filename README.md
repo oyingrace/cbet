@@ -56,6 +56,12 @@ Copy `.env.example` to `.env.local` and set:
 | `NEXT_PUBLIC_CHAIN_ID` | Chain id (defaults to `42220`, Celo mainnet) |
 | `CELO_RPC_URL` | Optional custom RPC for server-side verification |
 | `NEXT_PUBLIC_BETTING_CUTOFF_MINUTES` | Minutes before a draw when betting closes |
+| `RELAYER_PRIVATE_KEY` | Server-only. Funds small CELO top-ups so MiniPay wallets holding only USDT can pay gas (MiniPay doesn't yet support paying gas in USDT) |
+| `RELAYER_MIN_CELO_BALANCE` / `RELAYER_TOPUP_CELO_AMOUNT` / `RELAYER_DRIP_COOLDOWN_MINUTES` | Gas top-up tuning (see `.env.example`) |
+
+### Why a gas relayer?
+
+MiniPay wallets are often funded with only USDT. Celo's protocol supports paying gas in USDT, but MiniPay itself currently only exposes that for cUSD — so a USDT-only wallet with no CELO can't submit *any* transaction. Before a bet's `approve`/`placeBet` transactions, the app calls `/api/wallet/ensure-gas`, which tops up a small amount of CELO from a relayer wallet if the player's balance is too low. The relayer never touches USDT and never signs anything on the player's behalf — it only funds gas.
 
 ## Scripts
 
