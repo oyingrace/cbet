@@ -57,7 +57,7 @@ const games = [
 ].map((g) => ({
   ...g,
   numberRange: range,
-  minBetAmount: 1,
+  minBetAmount: 0.1,
   maxBetAmount: 100,
   validationRules: {},
   currentDraw: { status: 'pending' },
