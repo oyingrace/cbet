@@ -12,7 +12,7 @@ export default function ProfilePage() {
   const { address } = useApp();
   const { balance } = useUsdtBalance();
 
-  const { data: bets } = useSWR(
+  const { data: bets, isLoading } = useSWR(
     address ? ['/api/user/bets', address] : null,
     async ([url]) => {
       const res = await walletFetch(address, `${url}?limit=100`);
@@ -39,12 +39,23 @@ export default function ProfilePage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <Stat label="USDT balance" value={`${formatUsdt(balance)} USDT`} />
-          <Stat label="Total bets" value={String(totalBets)} />
-          <Stat label="Total staked" value={`${formatUsdt(totalStaked)} USDT`} />
-          <Stat label="Total won" value={`${formatUsdt(totalWon)} USDT`} positive />
-        </div>
+        {isLoading ? (
+          <div className="grid grid-cols-2 gap-3">
+            {[0, 1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="h-[72px] rounded-2xl bg-gray-100 dark:bg-dark-bg-secondary animate-pulse"
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-3">
+            <Stat label="USDT balance" value={`${formatUsdt(balance)} USDT`} />
+            <Stat label="Total bets" value={String(totalBets)} />
+            <Stat label="Total staked" value={`${formatUsdt(totalStaked)} USDT`} />
+            <Stat label="Total won" value={`${formatUsdt(totalWon)} USDT`} positive />
+          </div>
+        )}
       </div>
       <Navigation activePage="me" />
     </div>

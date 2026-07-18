@@ -2,6 +2,7 @@
 
 import useSWR from 'swr';
 import { formatUsdt } from '@/lib/web3/format';
+import { formatRelativeTime } from '@/lib/utils/relativeTime';
 
 const fetcher = async (url) => {
   const res = await fetch(url);
@@ -48,8 +49,11 @@ export default function LatestResults({ limit = 6 }) {
             <span className="font-medium text-gray-800 dark:text-dark-text-primary">
               {result.game?.name || result.roundType}
             </span>
-            <span className="text-xs text-gray-500 dark:text-dark-text-secondary">
-              {new Date(result.drawTime).toLocaleString()}
+            <span
+              className="text-xs text-gray-500 dark:text-dark-text-secondary"
+              title={new Date(result.drawTime).toLocaleString()}
+            >
+              {formatRelativeTime(result.drawTime)}
             </span>
           </div>
           <div className="flex flex-wrap gap-1.5">

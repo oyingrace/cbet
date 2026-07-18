@@ -120,6 +120,23 @@ const GameDetail = () => {
     }
   };
 
+  const handleQuickPick = () => {
+    if (!game) return;
+    const minNumbers =
+      typeof game.minNumbers === 'object' ? game.minNumbers.min : game.minNumbers;
+    const maxRange =
+      typeof game.numberRange === 'object' ? game.numberRange.max : game.numberRange;
+    const minRange = typeof game.numberRange === 'object' ? game.numberRange.min : 1;
+
+    const pool = Array.from({ length: maxRange - minRange + 1 }, (_, i) => i + minRange);
+    const picks = [];
+    while (picks.length < minNumbers && pool.length > 0) {
+      const idx = Math.floor(Math.random() * pool.length);
+      picks.push(pool.splice(idx, 1)[0]);
+    }
+    setSelectedNumbers(picks.sort((a, b) => a - b));
+  };
+
   const isBetValid = () => {
     if (!game) return false;
     const minNumbers =
@@ -274,7 +291,16 @@ const GameDetail = () => {
           </div>
 
           <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold mb-4 dark:text-dark-text-primary">Select Numbers</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold dark:text-dark-text-primary">Select Numbers</h2>
+              <button
+                type="button"
+                onClick={handleQuickPick}
+                className="text-sm font-medium text-dream-blue dark:text-dream-yellow hover:underline"
+              >
+                Quick Pick
+              </button>
+            </div>
 
             <div className="mb-4 p-3 bg-gray-50 dark:bg-dark-bg-primary rounded-lg min-h-[60px]">
               <div className="flex flex-wrap gap-2">
@@ -362,6 +388,9 @@ const GameDetail = () => {
             <div className="flex items-center justify-between mb-2">
               <label className="block text-sm font-medium dark:text-dark-text-secondary">
                 {betMode === 'total' ? 'Total Stake (USDT)' : 'Stake Per Line (USDT)'}
+                <span className="ml-2 text-xs font-normal text-gray-400 dark:text-dark-text-secondary/70">
+                  Min {game.minBetAmount} · Max {game.maxBetAmount} USDT
+                </span>
               </label>
               {affordability.status === 'insufficient' && (
                 <button
@@ -380,26 +409,52 @@ const GameDetail = () => {
                 </button>
               )}
             </div>
-            <div className="relative">
-              <input
-                type="number"
-                value={betAmount}
-                onChange={(e) => setBetAmount(e.target.value)}
-                placeholder="Enter amount"
-                className={`w-full p-3 border rounded-lg dark:bg-dark-bg-primary dark:border-dark-bg-secondary ${
-                  affordability.status === 'sufficient'
-                    ? 'border-green-500'
-                    : affordability.status === 'insufficient' || betValidationError
-                      ? 'border-red-500'
-                      : ''
-                }`}
-                min={Number(game.minBetAmount) || 1}
-              />
-              {(balanceLoading || isRefreshingForBet) && (
-                <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-yellow-500" />
-                </div>
-              )}
+            <div className="relative flex items-center gap-2">
+              <button
+                type="button"
+                aria-label="Decrease amount"
+                onClick={() => {
+                  const step = Number(game.minBetAmount) || 1;
+                  const next = Math.max(0, (Number(betAmount) || 0) - step);
+                  setBetAmount(next ? String(Math.round(next * 100) / 100) : '');
+                }}
+                className="shrink-0 w-10 h-11 rounded-lg border dark:border-dark-bg-secondary text-gray-700 dark:text-dark-text-primary font-bold text-lg hover:bg-gray-100 dark:hover:bg-dark-bg-secondary"
+              >
+                −
+              </button>
+              <div className="relative flex-1">
+                <input
+                  type="number"
+                  value={betAmount}
+                  onChange={(e) => setBetAmount(e.target.value)}
+                  placeholder="Enter amount"
+                  className={`w-full p-3 border rounded-lg dark:bg-dark-bg-primary dark:border-dark-bg-secondary ${
+                    affordability.status === 'sufficient'
+                      ? 'border-green-500'
+                      : affordability.status === 'insufficient' || betValidationError
+                        ? 'border-red-500'
+                        : ''
+                  }`}
+                  min={Number(game.minBetAmount) || 1}
+                />
+                {(balanceLoading || isRefreshingForBet) && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-yellow-500" />
+                  </div>
+                )}
+              </div>
+              <button
+                type="button"
+                aria-label="Increase amount"
+                onClick={() => {
+                  const step = Number(game.minBetAmount) || 1;
+                  const next = (Number(betAmount) || 0) + step;
+                  setBetAmount(String(Math.round(next * 100) / 100));
+                }}
+                className="shrink-0 w-10 h-11 rounded-lg border dark:border-dark-bg-secondary text-gray-700 dark:text-dark-text-primary font-bold text-lg hover:bg-gray-100 dark:hover:bg-dark-bg-secondary"
+              >
+                +
+              </button>
             </div>
             {(betValidationError ||
               (affordability.message && affordability.status !== 'unknown')) && (

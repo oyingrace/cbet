@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { ChevronLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/header';
@@ -22,9 +23,10 @@ export default function RewardsPage() {
     try {
       await navigator.clipboard.writeText(referralLink);
       setCopied(true);
+      toast.success('Referral link copied');
       setTimeout(() => setCopied(false), 1500);
     } catch {
-      // ignore
+      toast.error('Could not copy link');
     }
   };
 
