@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import Header from '@/components/header';
 import Navigation from '@/components/navigation';
 import { useApp } from '@/lib/context/AppContext';
@@ -17,9 +18,10 @@ export default function WalletPage() {
     try {
       await navigator.clipboard.writeText(address);
       setCopied(true);
+      toast.success('Address copied');
       setTimeout(() => setCopied(false), 1500);
     } catch {
-      // ignore
+      toast.error('Could not copy address');
     }
   };
 
