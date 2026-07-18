@@ -2,6 +2,7 @@
 
 import useSWR from 'swr';
 import { ChevronLeft } from 'lucide-react';
+import { Trophy } from '@phosphor-icons/react';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/header';
 import Navigation from '@/components/navigation';
@@ -42,9 +43,12 @@ export default function LeaderboardPage() {
             ))}
           </div>
         ) : !data || data.length === 0 ? (
-          <p className="text-sm text-gray-500 dark:text-dark-text-secondary">
-            No winners yet. Be the first on the board!
-          </p>
+          <div className="flex flex-col items-center text-center py-8">
+            <Trophy size={28} className="text-gray-300 dark:text-dark-text-secondary/40 mb-2" />
+            <p className="text-sm text-gray-500 dark:text-dark-text-secondary">
+              No winners yet. Be the first on the board!
+            </p>
+          </div>
         ) : (
           <div className="space-y-2">
             {data.map((row) => {
