@@ -1,16 +1,21 @@
 'use client';
 
 import Link from 'next/link';
+import { useNextDrawCountdown } from '@/lib/hooks/useNextDrawCountdown';
 
 /**
- * Hero banner on the home screen. The source variant polled a shared-rounds
- * endpoint for the next draw time; that lives behind the draw engine (not yet
- * built), so this shows the call-to-action without the countdown for now.
+ * Hero banner on the home screen. Shows a live countdown to the next
+ * draw-combo draw, computed client-side from the static round schedule.
  */
 const LottoCard = () => {
+  const { label } = useNextDrawCountdown('draw-combo');
+
   return (
     <div className="rounded-lg overflow-hidden mb-4 relative bg-gradient-to-r from-blue-900 to-blue-800 dark:from-blue-800 dark:to-blue-700">
       <div className="relative p-4 z-10">
+        <p className="text-blue-200 text-xs font-medium uppercase tracking-wide mb-1">
+          Next draw in {label}
+        </p>
         <h2 className="text-white text-2xl font-bold mb-1">Play the next draw</h2>
         <p className="text-blue-100 text-sm mb-3">Pick your numbers, stake USDT, win big.</p>
         <Link href="/games">
