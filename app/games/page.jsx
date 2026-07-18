@@ -7,6 +7,7 @@ import Header from '../components/header';
 import { Navigation } from '../components/navigation';
 import BetHistory from '../components/betHistory';
 import { GAME_CATEGORIES, filterGamesByCategory } from '@/lib/utils/gameTypes';
+import { getGameIcon } from '@/lib/utils/gameIcons';
 
 const fetcher = async (url) => {
   const response = await fetch(url);
@@ -117,14 +118,17 @@ export default function GameSelectionPage() {
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
           {filteredGames && filteredGames.length > 0 ? (
-            filteredGames.map((game) => (
+            filteredGames.map((game) => {
+              const GameIcon = getGameIcon(game.type);
+              return (
               <Link
                 key={game._id}
                 href={`/games/${game._id}`}
                 className="block border-2 border-dream-yellow dark:border-dream-yellow-subtlelight rounded-lg overflow-hidden bg-white dark:bg-dark-bg-primary hover:bg-gray-50 dark:hover:bg-dark-bg-secondary transition-colors duration-200"
               >
-                <div className="h-20 bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center">
-                  <span className="text-white text-xl font-extrabold uppercase tracking-wide">
+                <div className="h-20 bg-gradient-to-br from-blue-600 to-blue-800 flex flex-col items-center justify-center gap-1">
+                  <GameIcon size={22} weight="fill" className="text-white/90" />
+                  <span className="text-white text-xs font-bold uppercase tracking-wide">
                     {game.type}
                   </span>
                 </div>
@@ -142,7 +146,8 @@ export default function GameSelectionPage() {
                   )}
                 </div>
               </Link>
-            ))
+              );
+            })
           ) : (
             <div className="col-span-full text-center py-8">
               <p className="text-gray-500 dark:text-dark-text-secondary">
