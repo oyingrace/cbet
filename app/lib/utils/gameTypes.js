@@ -116,26 +116,23 @@ export const GAME_CATEGORIES = [
 /** Round pools aligned with the draw schedules. */
 export const ROUND_CONFIGS = {
   'draw-combo': {
-    drawTimes: [
-      '00:00', '02:30', '05:00', '07:30', '10:00',
-      '12:30', '15:00', '17:30', '20:00', '22:30',
-    ],
+    drawTimes: ['09:00', '11:15', '14:00', '17:00', '20:30'],
     prefix: '',
   },
   'lucky-10': {
-    drawTimes: ['00:00', '06:00', '12:00', '18:00'],
+    drawTimes: ['10:00', '22:00'],
     prefix: 'LCK10',
   },
   'mega-20': {
-    drawTimes: ['03:00', '09:00', '15:00', '21:00'],
+    drawTimes: ['10:00', '22:00'],
     prefix: 'MEGA20',
   },
   'turbo-30': {
-    drawTimes: ['02:00', '06:00', '10:00', '14:00', '18:00', '22:00'],
+    drawTimes: ['12:00', '16:00', '20:00'],
     prefix: 'TRB30',
   },
   'ultra-40': {
-    drawTimes: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+    drawTimes: ['12:00', '16:00', '20:00'],
     prefix: 'ULT40',
   },
 };
