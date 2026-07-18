@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 import { useWriteContract, usePublicClient } from 'wagmi';
 import { useApp } from '@/lib/context/AppContext';
 import BetCalculator from '@/lib/services/betCalculator';
@@ -147,11 +148,14 @@ const BetConfirmationModal = ({
       }
 
       await onConfirm?.();
+      toast.success('Bet placed! Good luck.');
       router.push('/bets/history');
     } catch (err) {
       console.error('Bet placement failed:', err);
-      setErrorMsg(err?.shortMessage || err?.message || 'Something went wrong');
+      const message = err?.shortMessage || err?.message || 'Something went wrong';
+      setErrorMsg(message);
       setStatus('error');
+      toast.error(message);
     }
   };
 
