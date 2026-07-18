@@ -9,6 +9,7 @@ import QuickActions from '../components/quickactions';
 import LottoCard from '../components/LottoCard';
 import LatestResults from '../components/latestresults';
 import RecentWinners from '../components/recentWinners';
+import { getGameIcon } from '@/lib/utils/gameIcons';
 
 const FEATURED_GAME_TYPES = ['draw-2', 'draw-3'];
 
@@ -100,13 +101,16 @@ export default function DashboardPage() {
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-4">
-              {featuredGames.map((game) => (
+              {featuredGames.map((game) => {
+                const GameIcon = getGameIcon(game.type);
+                return (
                 <div
                   key={game._id}
                   className="border dark:border-dark-bg-secondary rounded-lg overflow-hidden bg-white dark:bg-dark-bg-primary transition-colors duration-200"
                 >
-                  <div className="h-24 relative bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center">
-                    <span className="text-white text-2xl font-extrabold uppercase tracking-wide">
+                  <div className="h-24 relative bg-gradient-to-br from-blue-600 to-blue-800 flex flex-col items-center justify-center gap-1">
+                    <GameIcon size={26} weight="fill" className="text-white/90" />
+                    <span className="text-white text-lg font-extrabold uppercase tracking-wide">
                       {game.type}
                     </span>
                   </div>
@@ -131,7 +135,8 @@ export default function DashboardPage() {
                     </button>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
