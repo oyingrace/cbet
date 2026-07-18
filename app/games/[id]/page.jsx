@@ -406,26 +406,52 @@ const GameDetail = () => {
                 </button>
               )}
             </div>
-            <div className="relative">
-              <input
-                type="number"
-                value={betAmount}
-                onChange={(e) => setBetAmount(e.target.value)}
-                placeholder="Enter amount"
-                className={`w-full p-3 border rounded-lg dark:bg-dark-bg-primary dark:border-dark-bg-secondary ${
-                  affordability.status === 'sufficient'
-                    ? 'border-green-500'
-                    : affordability.status === 'insufficient' || betValidationError
-                      ? 'border-red-500'
-                      : ''
-                }`}
-                min={Number(game.minBetAmount) || 1}
-              />
-              {(balanceLoading || isRefreshingForBet) && (
-                <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-yellow-500" />
-                </div>
-              )}
+            <div className="relative flex items-center gap-2">
+              <button
+                type="button"
+                aria-label="Decrease amount"
+                onClick={() => {
+                  const step = Number(game.minBetAmount) || 1;
+                  const next = Math.max(0, (Number(betAmount) || 0) - step);
+                  setBetAmount(next ? String(Math.round(next * 100) / 100) : '');
+                }}
+                className="shrink-0 w-10 h-11 rounded-lg border dark:border-dark-bg-secondary text-gray-700 dark:text-dark-text-primary font-bold text-lg hover:bg-gray-100 dark:hover:bg-dark-bg-secondary"
+              >
+                −
+              </button>
+              <div className="relative flex-1">
+                <input
+                  type="number"
+                  value={betAmount}
+                  onChange={(e) => setBetAmount(e.target.value)}
+                  placeholder="Enter amount"
+                  className={`w-full p-3 border rounded-lg dark:bg-dark-bg-primary dark:border-dark-bg-secondary ${
+                    affordability.status === 'sufficient'
+                      ? 'border-green-500'
+                      : affordability.status === 'insufficient' || betValidationError
+                        ? 'border-red-500'
+                        : ''
+                  }`}
+                  min={Number(game.minBetAmount) || 1}
+                />
+                {(balanceLoading || isRefreshingForBet) && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-yellow-500" />
+                  </div>
+                )}
+              </div>
+              <button
+                type="button"
+                aria-label="Increase amount"
+                onClick={() => {
+                  const step = Number(game.minBetAmount) || 1;
+                  const next = (Number(betAmount) || 0) + step;
+                  setBetAmount(String(Math.round(next * 100) / 100));
+                }}
+                className="shrink-0 w-10 h-11 rounded-lg border dark:border-dark-bg-secondary text-gray-700 dark:text-dark-text-primary font-bold text-lg hover:bg-gray-100 dark:hover:bg-dark-bg-secondary"
+              >
+                +
+              </button>
             </div>
             {(betValidationError ||
               (affordability.message && affordability.status !== 'unknown')) && (
