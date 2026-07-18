@@ -8,6 +8,7 @@ import Header from '../components/header';
 import QuickActions from '../components/quickactions';
 import LottoCard from '../components/LottoCard';
 import LatestResults from '../components/latestresults';
+import RecentWinners from '../components/recentWinners';
 
 const FEATURED_GAME_TYPES = ['draw-2', 'draw-3'];
 
@@ -73,6 +74,7 @@ export default function DashboardPage() {
 
         <LottoCard />
         <QuickActions />
+        <RecentWinners />
 
         <div className="mb-6">
           <div className="flex justify-between items-center mb-3">
