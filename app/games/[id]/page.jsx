@@ -388,6 +388,9 @@ const GameDetail = () => {
             <div className="flex items-center justify-between mb-2">
               <label className="block text-sm font-medium dark:text-dark-text-secondary">
                 {betMode === 'total' ? 'Total Stake (USDT)' : 'Stake Per Line (USDT)'}
+                <span className="ml-2 text-xs font-normal text-gray-400 dark:text-dark-text-secondary/70">
+                  Min {game.minBetAmount} · Max {game.maxBetAmount} USDT
+                </span>
               </label>
               {affordability.status === 'insufficient' && (
                 <button
