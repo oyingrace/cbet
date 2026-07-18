@@ -11,6 +11,11 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "cbet",
   description: "A numbers lottery on Celo — play with USDT in MiniPay.",
+  openGraph: {
+    title: "cbet",
+    description: "A numbers lottery on Celo — play with USDT in MiniPay.",
+    type: "website",
+  },
   other: {
     "talentapp:project_verification":
       "7910e21eca2eae90717bdea9033b22331dd3bdd9a17d7aad25d184303eda7616a523c1ea76b454108000ad4c57ef503ad6912d589dacbc4126f1d53c241abbfd",
@@ -22,6 +27,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
+  themeColor: "#1e3a8a",
 };
 
 export default function RootLayout({
