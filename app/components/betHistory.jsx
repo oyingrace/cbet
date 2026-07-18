@@ -1,6 +1,7 @@
 'use client';
 
 import useSWR from 'swr';
+import { Ticket } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context/AppContext';
 import { walletFetch } from '@/lib/web3/apiClient';
 import { formatUsdt } from '@/lib/web3/format';
@@ -42,9 +43,12 @@ export default function BetHistory({ limit = 10 }) {
 
   if (!data || data.length === 0) {
     return (
-      <p className="text-sm text-gray-500 dark:text-dark-text-secondary mt-3">
-        No bets yet. Pick a game to place your first bet.
-      </p>
+      <div className="flex flex-col items-center text-center py-6 mt-3">
+        <Ticket size={28} className="text-gray-300 dark:text-dark-text-secondary/40 mb-2" />
+        <p className="text-sm text-gray-500 dark:text-dark-text-secondary">
+          No bets yet. Pick a game to place your first bet.
+        </p>
+      </div>
     );
   }
 
