@@ -4,6 +4,7 @@ import useSWR from 'swr';
 import { useApp } from '@/lib/context/AppContext';
 import { walletFetch } from '@/lib/web3/apiClient';
 import { formatUsdt } from '@/lib/web3/format';
+import { formatRelativeTime } from '@/lib/utils/relativeTime';
 
 const statusStyles = {
   pending: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/10 dark:text-yellow-400',
@@ -61,6 +62,11 @@ export default function BetHistory({ limit = 10 }) {
             <p className="text-xs text-gray-500 dark:text-dark-text-secondary">
               {bet.numbers?.join(', ')}
             </p>
+            {bet.createdAt && (
+              <p className="text-[11px] text-gray-400 dark:text-dark-text-secondary/70 mt-0.5">
+                {formatRelativeTime(bet.createdAt)}
+              </p>
+            )}
           </div>
           <div className="text-right shrink-0 ml-3">
             <p className="text-sm font-semibold text-gray-800 dark:text-dark-text-primary">
