@@ -120,6 +120,23 @@ const GameDetail = () => {
     }
   };
 
+  const handleQuickPick = () => {
+    if (!game) return;
+    const minNumbers =
+      typeof game.minNumbers === 'object' ? game.minNumbers.min : game.minNumbers;
+    const maxRange =
+      typeof game.numberRange === 'object' ? game.numberRange.max : game.numberRange;
+    const minRange = typeof game.numberRange === 'object' ? game.numberRange.min : 1;
+
+    const pool = Array.from({ length: maxRange - minRange + 1 }, (_, i) => i + minRange);
+    const picks = [];
+    while (picks.length < minNumbers && pool.length > 0) {
+      const idx = Math.floor(Math.random() * pool.length);
+      picks.push(pool.splice(idx, 1)[0]);
+    }
+    setSelectedNumbers(picks.sort((a, b) => a - b));
+  };
+
   const isBetValid = () => {
     if (!game) return false;
     const minNumbers =
@@ -274,7 +291,16 @@ const GameDetail = () => {
           </div>
 
           <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold mb-4 dark:text-dark-text-primary">Select Numbers</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold dark:text-dark-text-primary">Select Numbers</h2>
+              <button
+                type="button"
+                onClick={handleQuickPick}
+                className="text-sm font-medium text-dream-blue dark:text-dream-yellow hover:underline"
+              >
+                Quick Pick
+              </button>
+            </div>
 
             <div className="mb-4 p-3 bg-gray-50 dark:bg-dark-bg-primary rounded-lg min-h-[60px]">
               <div className="flex flex-wrap gap-2">
